@@ -1,0 +1,38 @@
+{
+  "name": "whatsapp-api-server",
+  "version": "2.2.0",
+  "description": "Whatsapp Api Server Multi Device",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "start:dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "whatsapp-api",
+    "node.js"
+  ],
+  "author": "Legian Wahyu P",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.21.01",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "cookie-parser": "^1.4.5",
+    "cookie-session": "^1.4.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.0",
+    "express-validator": "^6.9.2",
+    "http": "0.0.1-security",
+    "qrcode": "^1.4.4",
+    "socket.io": "4.1.2",
+    "whatsapp-web.js": "latest"
+  },
+  "engines": {
+    "node": "v12.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}

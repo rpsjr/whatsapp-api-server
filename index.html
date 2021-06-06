@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous"></script>
+    <title>Whatsapp API</title>
+
+
+    <style type="text/css">
+        .preloader {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 9999;
+          background-color: #fff;
+        }
+        .preloader .loading {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%,-50%);
+          font: 14px arial;
+        }
+
+        .client {
+            position: relative;
+            display: inline-block;
+        }
+        .hide {
+            display: none;
+        }
+        #qrcode {
+            padding: 10px;
+        }
+
+        .modal {
+               position: fixed;
+               top: 110px;
+               bottom: 0;
+               left: 0;
+               z-index: 10040;
+               overflow: auto;
+               overflow-y: auto;
+            }
+    </style>
+  </head>
+
+  <body>
+    <header>
+        <div class="navbar navbar-dark bg-dark box-shadow">
+            <div class="container d-flex justify-content-between">
+                <a href="/" class="navbar-brand d-flex align-items-center">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="25" height="25">
+                    &nbsp;
+                    <strong>Whatsapp API</strong>
+                </a>
+                <div class="pull-right">
+                    <strong class="text-light mr-3">Support by CODINGNESIA</strong>
+                    &nbsp;
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modalLogout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Modal Logout -->
+    <div class="modal fade" id="modalLogout" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">LOGOUT</h5>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>Apakah anda yakin akan keluar ?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+            <a href="/logout">
+                <button type="button" class="btn btn-primary">Logout</button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal Disconnect -->
+    <div class="modal fade" id="modalDisconnect" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Disconnect</h5>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="body-disconnect"></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Batal</button>
+            <button class="btn btn-danger btn-sm dis-client-btn">Disconnect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container justify-content-between mt-4">
+        <div id="app">
+            <div class="form-container row">
+                <div class="col-md-6">
+                    <form id="form">
+                        <div class="form-group mb-3">
+                            <label for="client-id">ID</label>
+                            <input type="text" class="form-control" id="client-id" placeholder="Masukkan ID" required>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="client-description">Deskripsi</label>
+                            <textarea class="form-control" id="client-description" placeholder="Masukkan Deskripsi" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-submit">Tambah Client</button>
+                    </form>
+                </div>
+            </div>
+            <hr>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label>Client</label>
+                        <select name="client_lists" id="client_lists" class="form-control">
+                            <option>Pilih Client</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-danger btn-sm disconnect" data-toggle="modal" data-target="#modalDisconnect">Disconnect</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="client-container">
+                    <div class="card client hide col-sm-3 mb-3">
+                        <div class="card-header">
+                            <h3 class="title"></h3>
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item overflow-auto" style="height: 75px; font-size: 14px;">
+                                <p class="description"></p>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="text-center">
+                                  <div class="spinner-border" id="preload" role="status">
+                                    <span class="sr-only"></span>
+                                  </div>
+                                </div>
+                                <img src="" alt="QR Code" id="qrcode">
+                            </li>
+                            <li class="list-group-item overflow-auto mb-3" style="height: 175px; font-size: 14px;" tabindex="1">
+                                <h5>Logs:</h5>
+                                <ul class="logs"></ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- <div class="client hide">
+                    <h3 class="title"></h3>
+                    <p class="description"></p>
+                    <img src="" alt="QR Code" id="qrcode">
+                    <h3>Logs:</h3>
+                    <ul class="logs"></ul>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js" integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc" crossorigin="anonymous"></script>
+    -->
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+
+    <script src="http://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script>
+        $(document).ready(function(){
+          $(".preloader").fadeOut();
+        })
+    </script>
+    <script>
+        $(document).ready(function() {
+            var socket = io();
+
+            // Kantor
+            // var socket = io.connect('http://localhost:8000/', { path: '/socket.io' });
+            // var socket = io.connect('http://192.168.10.24:8000/', { path: '/socket.io' });
+            // var socket = io.connect('http://146504109984.ip-dynamic.com:8000/', { path: '/socket.io' });
+
+            // Ketika button tambah diklik
+            $('#form').submit(function() {
+                var clientId = $('#client-id').val();
+                var clientDescription = $('#client-description').val();
+                var template = $('.client').first().clone()
+                                           .removeClass('hide')
+                                           .addClass(clientId);
+                template.find('.title').html(clientId);
+                template.find('.description').html(clientDescription);
+                $('.client-container').append(template);
+
+                socket.emit('create-session', {
+                    id: clientId,
+                    description: clientDescription
+                });
+            });
+
+            socket.on('init', function(data) {
+                $('.client-container .client').not(':first').remove();
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    var session = data[i];
+
+                    var clientId = session.id;
+                    var clientDescription = session.description;
+                    var template = $('.client').first().clone()
+                                               .removeClass('hide')
+                                               .addClass(clientId);
+                    template.find('.title').html(clientId);
+                    template.find('.description').html(clientDescription);
+                    $('.client-container').append(template);
+
+                    if (session.ready) {
+                        $(`.client.${session.id} #qrcode`).attr('src', 'https://icon-library.com/images/15fa0a9d9d.png');
+                        $(`.client.${session.id} #qrcode`).attr('width', '248');
+                        $(`.client.${session.id} #preload`).hide();
+                        $(`.client.${session.id} .logs`).append($('<li>').text('Whatsapp is ready!'));
+                    } else {
+                        $(`.client.${session.id} .logs`).append($('<li>').text('Connecting...'));
+                        $(`.client.${session.id} #qrcode`).hide();
+                        $(`.client.${session.id} #preload`).show();
+                    }
+
+                    $("#client_lists").append('<option value='+data[i].id+'>'+data[i].id+'</option>');
+                }
+            });
+
+            socket.on('remove-session', function(id) {
+                $(`.client.${id}`).remove();
+                window.location = '/';
+            });
+
+            socket.on('message', function(data) {
+                $(`.client.${data.id} .logs`).append($('<li>').text(data.text));
+            });
+
+            socket.on('qr', function(data) {
+                $(`.client.${data.id} #preload`).hide();
+                $(`.client.${data.id} #preload`).fadeOut();
+                $(`.client.${data.id} #qrcode`).attr('src', data.src);
+                $(`.client.${data.id} #qrcode`).show();
+            });
+
+            socket.on('ready', function(data) {
+                $(`.client.${data.id} #qrcode`).attr('src', 'https://icon-library.com/images/15fa0a9d9d.png');
+                $(`.client.${data.id} #qrcode`).attr('width', '248');
+                $(`.client.${data.id} #qrcode`).show();
+                window.location = '/';
+            });
+
+            socket.on('authenticated', function(data) {
+                $(`.client.${data.id} #qrcode`).show();
+            });
+
+
+            $('.disconnect').click(function() {
+                var clientId = $('#client_lists').val();
+                var bodyDisconnect = "Apakah anda akan disconnect ID "+clientId+" ?"
+                $(".body-disconnect").text(bodyDisconnect);
+            });
+
+            $('.dis-client-btn').click(function() {
+                var clientId = $('#client_lists').val();
+
+                socket.emit('disconnected-session', {
+                    id: clientId
+                });
+                window.location = '/';
+            });
+
+        });
+    </script>
+  </body>
+</html>
